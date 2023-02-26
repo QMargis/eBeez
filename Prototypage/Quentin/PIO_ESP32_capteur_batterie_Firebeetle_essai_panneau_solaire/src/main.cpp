@@ -1,6 +1,8 @@
 #include <Arduino.h>
 #include <Wire.h>
 
+// #include "ADC.h"
+
 #include <WiFi.h>
 #include <WiFiMulti.h>
 
@@ -12,8 +14,18 @@
 #include <esp_bt.h>
 
 #include <Preferences.h>
-#include "secret.h"
 
+#include "secret.h"
+/*
+Non synchronisé Github, besoin de #define des variables suivantes :
+Wifi :
+WIFISSID1 ==> SSID du routeur WIFI
+WIFIPASSWORD1 ==> Mot de passe du routeur WIFI
+// MQTT
+MQTTBROKER ==> Adresse du broker MQTT
+MQTT_USERNAME ==> Login du compte MQTT
+MQTT_PASSWORD ==> Mot de passe du compte MQTT
+*/
 
 // Nom de l'ESP32 sur le réseau MQTT
 #define MQTT_CLIENT_NAME "ESPFIREBTLSOL"
@@ -127,18 +139,12 @@ void setup()
   pinMode(LED, OUTPUT);
 
   ++bootCount;
-  
+
   log_pref(debug_pref, "\nBootcount : " + String(bootCount) + "\n");
 
   esp_sleep_enable_timer_wakeup(TIME_TO_SLEEP * uS_TO_S_FACTOR);
 
   log_pref(debug_pref, "Heap libre : " + String(ESP.getFreeHeap()) + " sur " + String(ESP.getHeapSize()) + "\n");
-}
-
-void loop()
-{
-  // Refresh Watchdog desactivé en boucle, peut-être utile pour plus tard
-  // watchDogRefresh();
 
   blink();
 
@@ -172,6 +178,12 @@ void loop()
   go_to_sleep();
 }
 
+void loop()
+{
+  // Ne devrait pas arriver là : Réveil / Execution / Veille ==> pas d'utilisation de la boucle
+  go_to_sleep();
+}
+
 /****************************************
  * Auxiliar Functions
  ****************************************/
@@ -186,34 +198,19 @@ void blink()
 
 void setup_wifi()
 {
-  // Serial.println("Entree setup_wifi");
-
   int glitch = 0;
   delay(10);
-  // We start by connecting to a WiFi network
-  // Serial.println();
-  // Serial.print("Connecting to ");
-  // Serial.println(WIFISSID1);
+
   WiFi.begin(WIFISSID1, WIFIPASSWORD1);
 
   while (WiFi.status() != WL_CONNECTED)
   {
-    // Serial.println("Setup_wifi : while not connected");
-    // Serial.print("Glitch :");
-    // Serial.println(glitch);
     if (glitch >= 10)
     {
-      // Serial.println("Glitch-WIFI: Going to sleep now");
       go_to_sleep();
     }
     if (glitch == 5)
     {
-      // WiFi.disconnect(true);
-      // delay(50);
-      //  Serial.println();
-      //  Serial.print("Connecting to ");
-      //  Serial.println(WIFISSID2);
-      // WiFi.begin(WIFISSID2, WIFIPASSWORD2);
       glitch++;
     }
     else
@@ -252,9 +249,6 @@ void reconnect()
       }
       else
       {
-        // Serial.print("Failed, rc=");
-        // Serial.print(client.state());
-        // Serial.println(" try again in 2 seconds");
         if (WiFi.status() != WL_CONNECTED)
         {
           WiFi.disconnect(true);
@@ -302,13 +296,15 @@ void print_wakeup_reason()
 
 void go_to_sleep()
 {
+  // Deconnexion MQTT
   client.disconnect();
   delay(50);
+  // Deconnexion Wifi
   WiFi.disconnect(true);
   WiFi.mode(WIFI_OFF);
-  btStop();
-  // adc_power_release();
   esp_wifi_stop();
+  // Deconnexion Bluetooth
+  btStop();
   esp_bt_controller_disable();
   // Serial.flush();
   esp_deep_sleep_start();
@@ -317,6 +313,7 @@ void go_to_sleep()
 void IRAM_ATTR watchDogInterrupt()
 {
   // Serial.println("Reboot watchdog");
+  Serial.printf("WD!");
   ESP.restart();
 }
 
@@ -328,6 +325,7 @@ void watchDogRefresh()
 
 void log_pref(String &debug_pref, String log)
 {
+  // Log de debug en mémoire ESP pour transmission à la prochaine connexion MQTT
   debug_pref += log;
   preferences.putString("debug", debug_pref);
 }
