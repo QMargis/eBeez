@@ -114,8 +114,8 @@ OneWire oneWire(oneWireBus);
 DallasTemperature sensors(&oneWire);
 
 //-----------SSID/PW -----------------
-const char*   ssid0        =  "HUAWEI-B528-CA54";
-const char*   password0    =  "Coco35500@";
+const char*   ssid0        =  "Thorvald";
+const char*   password0    =  "LaBazouge@35420";
 const char*   ssid1        =  "HUAWEI-B528-CA54_5G";
 const char*   password1    =  "Coco35500";
 const char*   ssid2        =  "AU_FOND_A_DROITE";
@@ -137,6 +137,9 @@ uint8_t       iNbReconnections  =  0;
 String        sNomRuche         = "Virtuel";
 String        sTopic            = "ruche/";
 
+int           iDebug            = 1; // 0: Debug désactivé  ; 1: Debug activé
+int           iCptVirtuel       = 1; // 0: Capteurs réelles ; 1: Simulation des capteurs
+
 //
 //*******//
 // SETUP //
@@ -144,14 +147,18 @@ String        sTopic            = "ruche/";
 
 void setup()
 { 
-  Serial.begin(115200);
-  delay (500);
+  if (!iDebug) {
+    Serial.begin(115200);
+    delay (500);
+  }
   Wire.begin(); // Wire communication begin
-  setupI2C();
-  setupHX711();
-  setupBME280();
-  //LoadCalibrationAllHX711 ();
-  //setupDS18B20 ();
+  if (!iCptVirtuel) {
+    setupI2C();
+    setupHX711();
+    setupBME280();
+    //LoadCalibrationAllHX711 ();
+    //setupDS18B20 ();
+  }
   setupPageWeb(); // a faire en dernier dans le setup
   Menu();
 }
@@ -162,7 +169,7 @@ void setup()
 void loop()
 {
   WifiReconnect();  // permet de tester la connection
-  ///SerialRead();
+  //SerialRead();
   client.loop();
   vTaskDelay(1);
 
