@@ -109,7 +109,7 @@ long totalWeight()  //sommes des 4 capteurs de poids
     return (measTotalWeight);
 }
 
-void LoadCalibrationAllHX711 ()
+bool LoadCalibrationAllHX711 ()
 {
     Serial.println("Calibration en cours");
     scale.begin(LOADCELL_1_DOUT_PIN, LOADCELL_SCK_PIN); 
@@ -132,4 +132,6 @@ void LoadCalibrationAllHX711 ()
     long reading4 = scale.get_units(10);
     ValCalibLoadCPT4 = reading4;
     Serial.println("Calibration terminée");
+
+    return true;
 }

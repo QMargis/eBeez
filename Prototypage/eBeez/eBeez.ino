@@ -54,14 +54,13 @@
 */
 
 
-#include <WiFi.h>
+//#include <WiFi.h>
 #include <Wire.h>  //include Wire.h library
 #include "HX711.h" //include load Amplifier
 #include <OneWire.h>
 #include <DallasTemperature.h>
 #include <EEPROM.h>
-
-#include "EspMQTTClient.h"
+#include <EspMQTTClient.h>
 
 #include <ESPAsyncWebServer.h>
 #include <AsyncTCP.h>
@@ -71,18 +70,6 @@
 #include "INA226.h";
 
 #include <BME280I2C.h>
-
-//-----------serveur MQTT----------------
-// Création de l'objet client qui à pour paramètre le SSID de la box, le MDP de la box, le domaine du MQTT, l'ID du MQTT, le MDP du MQTT, le nom de l'utilisateur et le port.
-EspMQTTClient client(
-    "Test",
-    "Safran35500",
-    "qmrs.ddns.net",  // MQTT Broker server ip
-    "tlot",           // Can be omitted if not needed
-    "test_safran",    // Can be omitted if not needed
-    "ESP_Ruche_test", // Client name that uniquely identify your device
-    1883              // The MQTT port, default to 1883. this line can be omitted
-);
 
 //-----------serveur Web-----------------
 AsyncWebServer server(80);
@@ -96,6 +83,7 @@ BME280I2C bme;    // Default : forced mode, standby time = 1000 ms
 // Oversampling = pressure ×1, temperature ×1, humidity ×1, filter off,
 
 //----INA219 Capteur de courant----------
+
 // HX711 circuit wiring
 const int LOADCELL_1_DOUT_PIN = 16;   //Capteur de poids n°1
 const int LOADCELL_2_DOUT_PIN = 17;   //Capteur de poids n°2
@@ -115,7 +103,7 @@ DallasTemperature sensors(&oneWire);
 
 //-----------SSID/PW -----------------
 const char*   ssid0        =  "Thorvald";
-const char*   password0    =  "LaBazouge@35420";
+const char*   password0    =  "StGeorges@35140";
 const char*   ssid1        =  "HUAWEI-B528-CA54_5G";
 const char*   password1    =  "Coco35500";
 const char*   ssid2        =  "AU_FOND_A_DROITE";
@@ -140,6 +128,22 @@ String        sTopic            = "ruche/";
 int           iDebug            = 1; // 0: Debug désactivé  ; 1: Debug activé
 int           iCptVirtuel       = 1; // 0: Capteurs réelles ; 1: Simulation des capteurs
 
+long          lDelayTrameMin    = 1; // Délais entre deux trames
+
+//----MQTT ----------
+int           iConnectedMQTT    = 0;
+//-----------serveur MQTT----------------
+// Création de l'objet client qui à pour paramètre le SSID de la box, le MDP de la box, le domaine du MQTT, l'ID du MQTT, le MDP du MQTT, le nom de l'utilisateur et le port.
+EspMQTTClient client(
+    "Thorvald",
+    "StGeorges@35140",
+    "qmrs.ddns.net",  // MQTT Broker server ip
+    "tlot",           // Can be omitted if not needed
+    "test_safran",    // Can be omitted if not needed
+    "ESP_Ruche_test", // Client name that uniquely identify your device
+    1883              // The MQTT port, default to 1883. this line can be omitted
+);
+
 //
 //*******//
 // SETUP //
@@ -147,12 +151,15 @@ int           iCptVirtuel       = 1; // 0: Capteurs réelles ; 1: Simulation des
 
 void setup()
 { 
-  if (!iDebug) {
+  if (iDebug)
+  {
     Serial.begin(115200);
     delay (500);
   }
+  setupMQTT();
   Wire.begin(); // Wire communication begin
-  if (!iCptVirtuel) {
+  if (!iCptVirtuel)
+  {
     setupI2C();
     setupHX711();
     setupBME280();
@@ -160,7 +167,7 @@ void setup()
     //setupDS18B20 ();
   }
   setupPageWeb(); // a faire en dernier dans le setup
-  Menu();
+  //Menu();
 }
 
 //**************************//
@@ -171,6 +178,12 @@ void loop()
   WifiReconnect();  // permet de tester la connection
   //SerialRead();
   client.loop();
+  if(iConnectedMQTT)
+  {
+    readMQTT();
+    writeMQTT();
+    vTaskDelay(lDelayTrameMin*60*1000);
+  }
   vTaskDelay(1);
 
 }
