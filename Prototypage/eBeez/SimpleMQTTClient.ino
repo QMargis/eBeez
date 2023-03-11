@@ -1,7 +1,8 @@
 
 void setupMQTT()
 {
-  
+  client.enableMQTTPersistence();
+  client.setMaxPacketSize(512);
 }
 
 void onConnectionEstablished()
@@ -28,6 +29,11 @@ void writeMQTT()
 {
     // Publish a message to sTopic
   if (iDebug) {
+    if(client.isWifiConnected()) Serial.println("WiFi Connected!");
+    if(client.isMqttConnected())
+    {
+      Serial.println("MQTT Connected!");
+    }
     Serial.println("Topic: " + sTopic + sNomRuche);
   }
   client.publish(sTopic + sNomRuche, geneJSon(0)); // You can activate the retain flag by setting the third parameter to true
