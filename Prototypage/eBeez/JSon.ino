@@ -36,9 +36,6 @@ String geneJSon(int iTrame) { // 0:donneesFull ; 10:donneesCalib ; 20:donneePara
           data1["Poids"] = (float)(random(1000, 5000))/1000;
       } 
       serializeJson(doc, sOutputJSon);
-      if (iDebug) {
-        serializeJsonPretty(doc, Serial);
-      }
       break;
     }
     case 10: // donneesCalib[iNbPaquet][lPresCpt1, lPresCpt2, lPresCpt3, lPresCpt4, bCalFaite, lPostCpt1, lPostCpt2, lPostCpt3, lPostCpt4]
@@ -49,7 +46,7 @@ String geneJSon(int iTrame) { // 0:donneesFull ; 10:donneesCalib ; 20:donneePara
       
       // Nomn de la ruche
       doc["Ruche"] = sNomRuche;
-    
+      
       // Add an array.
       JsonArray data = doc.to<JsonArray>();
       if (!iCptVirtuel) {
@@ -159,12 +156,12 @@ String geneJSon(int iTrame) { // 0:donneesFull ; 10:donneesCalib ; 20:donneePara
         data1["ErrorNumTrame"] = iTrame;
 
       serializeJson(doc, sOutputJSon);
-      if (iDebug) {
-        serializeJsonPretty(doc, Serial);
-      }
+
       break;
     }
   }
-  
+  if (iDebug) {
+    Serial.println(sOutputJSon);
+  }
   return (sOutputJSon);
 }

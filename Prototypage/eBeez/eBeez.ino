@@ -177,13 +177,14 @@ void loop()
 {
   WifiReconnect();  // permet de tester la connection
   //SerialRead();
+  client.enableMQTTPersistence();
   client.loop();
   if(iConnectedMQTT)
   {
     readMQTT();
     writeMQTT();
-    vTaskDelay(lDelayTrameMin*60*1000);
+    delay(lDelayTrameMin*30*1000);
   }
-  vTaskDelay(1);
+  //vTaskDelay(1);
 
 }
