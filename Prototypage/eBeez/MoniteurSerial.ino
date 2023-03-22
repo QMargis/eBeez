@@ -11,10 +11,11 @@ void SerialRead()
     if (sLectureSerie.equals("menu") || sLectureSerie.equals("MENU"))
         {
             vTaskDelay(1);
+            bMenu = true;
             Menu ();
             Serial.println(sLectureSerie + " OK"); Serial.println(">");
         }
-  
+
 // Calibration des capteurs de poids
       else if (sLectureSerie.equals("cal") || sLectureSerie.equals("CAL"))
         {  
@@ -30,6 +31,14 @@ void SerialRead()
           LoadMesurement();
           Serial.println(sLectureSerie + " OK"); Serial.println(">");
         }             
+
+// Affiche la mesure des parametres de l'alimentation
+      else if (sLectureSerie.equals("alim") || sLectureSerie.equals("ALIM"))
+        {  
+          vTaskDelay(1);
+          GetPower();
+          Serial.println(sLectureSerie + " OK"); Serial.println(">");
+        }          
 
  // Scan des peripheriques I2C   
       else if (sLectureSerie.equals("scan") || sLectureSerie.equals("SCAN"))
@@ -76,7 +85,14 @@ void SerialRead()
             Serial.println();
             Serial.println(sLectureSerie + " OK"); Serial.println(">");
         }
-
+        
+// Test de mise en veille 10 secondes
+      else if (sLectureSerie.equals("sleep") || sLectureSerie.equals("SLEEP"))
+        {
+            GotoToSleepAndWakeUpByTimer(10000000);
+            Serial.println(sLectureSerie + " OK"); Serial.println(">");
+        }
+   
 // Force la reconnexion en cas de perte de réseau
       else if (sLectureSerie.equals("rip") || sLectureSerie.equals("RIP"))
         {
@@ -84,7 +100,9 @@ void SerialRead()
             TryToConnectWifi();
             Serial.println(sLectureSerie + " OK"); Serial.println(">");
         }
-        
+   
+
+     
       // gestion des erreurs si mauvais retour.
       // evite de figer le programme dans une attente infinie sur le  port com
       else if (sLectureSerie.equals("") || sLectureSerie.equals("\n"))

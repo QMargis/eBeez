@@ -2,11 +2,10 @@
 // BME280 ------------0x76
 //
 
-
 void setupI2C()
 {
   Wire.begin(); // Wire communication begin
-  Serial.println("\nI2C Scanner");
+  Serial.println("\n configuration I2C Actif");
 }
 
 void Scan_I2C()

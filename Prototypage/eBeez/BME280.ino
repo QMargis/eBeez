@@ -1,6 +1,16 @@
+// T.LOT le 13-03-2023
+/*
+ * contient 6 appels
+ * setupBME280 à lancer une foi au demarrage
+ * printBME280Data pour le debug permet de sortir les infos dans le terminal a suprimer à la livraison
+ * les fonction MesureTemperature,MesureHumidite et MesurePression retounent un float 
+ * Exemple d'appel serielp.print(MesureTemperature());retourne 28.5
+ */
+
 void setupBME280()
 {
- while(!bme.begin())
+ //while(!bme.begin())
+ if (!bme.begin())
   {
     Serial.println("Could not find BME280 sensor!");
     delay(1000);
@@ -72,10 +82,12 @@ float MesureHumidite()  // à terminer
 float MesurePression()  // à terminer
 {
    float temp(NAN), hum(NAN), pres(NAN);
+   float fConvertHPascal;
    BME280::TempUnit tempUnit(BME280::TempUnit_Celsius);
    BME280::PresUnit presUnit(BME280::PresUnit_Pa);
    bme.read(pres, temp, hum, tempUnit, presUnit);  
-   return (pres);    
+   fConvertHPascal = pres/100;
+   return (fConvertHPascal);    
 }
 
 /*

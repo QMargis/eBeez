@@ -72,6 +72,35 @@ server.on("/lireSSID", HTTP_GET, [](AsyncWebServerRequest *request)
     request->send(200, "text/plain", sSSID_Select );
   }); 
  
+  //---------Lecture du courant IN226--------------------------
+server.on("/lireCourant", HTTP_GET, [](AsyncWebServerRequest *request)
+  { 
+    String sCourant = "Nan";
+           vTaskDelay(1); 
+           sCourant = MesureCourant();   
+            
+    request->send(200, "text/plain", sCourant );
+  });  
+  //---------Lecture de la puissance --------------------------
+server.on("/lirePuissance", HTTP_GET, [](AsyncWebServerRequest *request)
+  { 
+    String sPuissance  = "Nan";
+           vTaskDelay(1); 
+           sPuissance  = MesurePuissance (); 
+                 
+    request->send(200, "text/plain", sPuissance );
+  });
+
+  //---------Tension de la batterie ---------------------
+server.on("/lireBatterie", HTTP_GET, [](AsyncWebServerRequest *request)
+  { 
+    String sBatterie  = "Nan";
+           vTaskDelay(1); 
+           sBatterie  = String (MesureTension(),2); 
+                         
+    request->send(200, "text/plain", sBatterie);
+  });
+  
 //-----------TNiveau RSSI--------------------------------
 server.on("/lireNiveauRSSI", HTTP_GET, [](AsyncWebServerRequest *request)
   { 

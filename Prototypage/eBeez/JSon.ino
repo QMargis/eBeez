@@ -1,10 +1,7 @@
 #include <ArduinoJson.h>
 
-int iTrame = 0;
-int iNbPaquet = 1;
-
-String geneJSon(int iTrame) { // 0:donneesFull ; 10:donneesCalib ; 20:donneeParams; 99:donneesDebug
-  String sOutputJSon = "";
+char* geneJSon(int iTrame) { // 0:donneesFull ; 10:donneesCalib ; 20:donneeParams; 99:donneesDebug
+  char sOutputJSon[100] = "";
   int iCapacity = 0;
   
   switch (iTrame) {
@@ -14,8 +11,8 @@ String geneJSon(int iTrame) { // 0:donneesFull ; 10:donneesCalib ; 20:donneePara
       iCapacity = JSON_ARRAY_SIZE(5) + iNbPaquet * JSON_OBJECT_SIZE(5) + 2;
       StaticJsonDocument<100> doc;
       
-      // Nom de la ruche
-      doc["Ruche"] = sNomRuche;
+      // Nom du topic
+      doc["Topic"] = "Test";
     
       // Add an array.
       JsonArray data = doc.to<JsonArray>();
@@ -36,6 +33,9 @@ String geneJSon(int iTrame) { // 0:donneesFull ; 10:donneesCalib ; 20:donneePara
           data1["Poids"] = (float)(random(1000, 5000))/1000;
       } 
       serializeJson(doc, sOutputJSon);
+      if (iDebug) {
+        serializeJsonPretty(doc, Serial);
+      }
       break;
     }
     case 10: // donneesCalib[iNbPaquet][lPresCpt1, lPresCpt2, lPresCpt3, lPresCpt4, bCalFaite, lPostCpt1, lPostCpt2, lPostCpt3, lPostCpt4]
@@ -44,22 +44,22 @@ String geneJSon(int iTrame) { // 0:donneesFull ; 10:donneesCalib ; 20:donneePara
       iCapacity = JSON_ARRAY_SIZE(9) + iNbPaquet * JSON_OBJECT_SIZE(9) + 2;
       StaticJsonDocument<100> doc;
       
-      // Nomn de la ruche
-      doc["Ruche"] = sNomRuche;
+      // Nomn du topic
+      doc["Topic"] = sTopic;
       
       // Add an array.
       JsonArray data = doc.to<JsonArray>();
       if (!iCptVirtuel) {
         JsonObject data1 = data.createNestedObject();
-          data1["lPresCpt1"] = measWeight1();
-          data1["lPresCpt2"] = measWeight2();
-          data1["lPresCpt3"] = measWeight3();
-          data1["lPresCpt4"] = measWeight4();
+          data1["lPresCpt1"] = ValCalibLoadCPT1;
+          data1["lPresCpt2"] = ValCalibLoadCPT2;
+          data1["lPresCpt3"] = ValCalibLoadCPT3;
+          data1["lPresCpt4"] = ValCalibLoadCPT4;
           data1["bCalFaite"] = LoadCalibrationAllHX711();
-          data1["lPostCpt1"] = measWeight1();
-          data1["lPostCpt2"] = measWeight2();
-          data1["lPostCpt3"] = measWeight3();
-          data1["lPostCpt4"] = measWeight4();
+          data1["lPostCpt1"] = ValCalibLoadCPT1;
+          data1["lPostCpt2"] = ValCalibLoadCPT2;
+          data1["lPostCpt3"] = ValCalibLoadCPT3;
+          data1["lPostCpt4"] = ValCalibLoadCPT4;
       } 
       else {
         JsonObject data1 = data.createNestedObject();
@@ -80,20 +80,20 @@ String geneJSon(int iTrame) { // 0:donneesFull ; 10:donneesCalib ; 20:donneePara
       break;
     }
     
-    case 20: // donneeParams[iNbPaquet][sNomRuche, iTrame, lDelayTrameMin]
+    case 20: // donneeParams[iNbPaquet][sTopic, iTrame, lDelayTrameMin]
     {  
       // Allocate the JSON document
       int iCapacity = JSON_ARRAY_SIZE(3) + iNbPaquet * JSON_OBJECT_SIZE(3) + 2;
       StaticJsonDocument<100> doc;
       
-      // Nom de la ruche
-      doc["Ruche"] = sNomRuche;
+      // Nom du topic
+      doc["Topic"] = sTopic;
     
       // Add an array.
       JsonArray data = doc.to<JsonArray>();
 
       JsonObject data1 = data.createNestedObject();
-        data1["NomRuche"] = sNomRuche;
+        data1["Topic"] = sTopic;
         data1["NumTrame"] = iTrame;
         data1["DelaisTrameMinute"] = lDelayTrameMin;
 
@@ -109,8 +109,8 @@ String geneJSon(int iTrame) { // 0:donneesFull ; 10:donneesCalib ; 20:donneePara
       int iCapacity = JSON_ARRAY_SIZE(3) + iNbPaquet * JSON_OBJECT_SIZE(3) + 2;
       StaticJsonDocument<100> doc;
       
-      // Nom de la ruche
-      doc["Ruche"] = sNomRuche;
+      // Nom du topic
+      doc["Topic"] = sTopic;
     
       // Add an array.
       JsonArray data = doc.to<JsonArray>();
@@ -146,8 +146,8 @@ String geneJSon(int iTrame) { // 0:donneesFull ; 10:donneesCalib ; 20:donneePara
       int iCapacity = JSON_ARRAY_SIZE(1) + iNbPaquet * JSON_OBJECT_SIZE(1) + 2;
       StaticJsonDocument<100> doc;
       
-      // Nom de la ruche
-      doc["Ruche"] = sNomRuche;
+      // Nom du topic
+      doc["Topic"] = sTopic;
     
       // Add an array.
       JsonArray data = doc.to<JsonArray>();
@@ -160,8 +160,6 @@ String geneJSon(int iTrame) { // 0:donneesFull ; 10:donneesCalib ; 20:donneePara
       break;
     }
   }
-  if (iDebug) {
-    Serial.println(sOutputJSon);
-  }
+
   return (sOutputJSon);
 }
