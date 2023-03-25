@@ -127,12 +127,12 @@ PubSubClient client(wifiClient);
 
 //-----------configuration Connexion (multi)Wifi Local----------------
 //
-const char*   ssid0        =  "HUAWEI-8FA5";
-const char*   password0    =  "118A09TJ6BL";
-const char*   ssid1        =  "JaimePasLeChocolat";
-const char*   password1    =  "B*Zail3520*";
-const char*   ssid2        =  "Thorvald";
-const char*   password2    =  "StGeorges@35140";
+const char*   ssid0        =  "xxxx";
+const char*   password0    =  "xxxx";
+const char*   ssid1        =  "xxxx";
+const char*   password1    =  "xxxx";
+const char*   ssid2        =  "xxxx";
+const char*   password2    =  "xxxx";
 
 //-----------configuration de la broche de pilotage de l'alim des capteurs----------------
 
@@ -153,6 +153,7 @@ uint8_t       iNbReconnections  =  0;
 bool          bMenu             =  true;
 int           iTrame            =  0;
 int           iNbPaquet         =  1;
+char          sOutputJSon[150];
 
 char*         sTopic            =  "Ruche/Virtuel";
 int           iDebug            =  1; // 0: Debug désactivé  ; 1: Debug activé

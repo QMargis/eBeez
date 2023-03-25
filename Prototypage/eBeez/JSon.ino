@@ -1,9 +1,8 @@
 #include <ArduinoJson.h>
 
-char* geneJSon(int iTrame) { // 0:donneesFull ; 10:donneesCalib ; 20:donneeParams; 99:donneesDebug
-  char sOutputJSon[100] = "";
-  int iCapacity = 0;
-  
+void geneJSon(int iTrame) { // 0:donneesFull ; 10:donneesCalib ; 20:donneeParams; 99:donneesDebug
+  int iCapacity;
+
   switch (iTrame) {
     case 0: // donneesFull[iNbPaquet][fTempRuche, fTempExt, fHumidite, fPression, lPoids]
     {
@@ -11,31 +10,25 @@ char* geneJSon(int iTrame) { // 0:donneesFull ; 10:donneesCalib ; 20:donneeParam
       iCapacity = JSON_ARRAY_SIZE(5) + iNbPaquet * JSON_OBJECT_SIZE(5) + 2;
       StaticJsonDocument<100> doc;
       
-      // Nom du topic
-      doc["Topic"] = "Test";
-    
       // Add an array.
       JsonArray data = doc.to<JsonArray>();
       if (!iCptVirtuel) {
         JsonObject data1 = data.createNestedObject();
-          data1["TemperatureRuche"] = TemperatureInterneRuche();
-          data1["TemperatureExt"] = MesureTemperature();
+          data1["TempRuche"] = TemperatureInterneRuche();
+          data1["TempExt"] = MesureTemperature();
           data1["Humidite"] = MesureHumidite();
           data1["Pression"] = MesurePression();
           data1["Poids"] = totalWeight();
       }  
       else {
         JsonObject data1 = data.createNestedObject();
-          data1["TemperatureRuche"] = (float)(random(1000, 40000))/1000;
-          data1["TemperatureExt"] = (float)(random(1000, 40000))/1000;
-          data1["Humidite"] = (float)(random(40, 60));
-          data1["Pression"] = (float)(random(950, 1030));
-          data1["Poids"] = (float)(random(1000, 5000))/1000;
+          data1["TempRuche"] = (int)(random(1000, 40000))/1000;
+          data1["TempExt"] = (int)(random(1000, 40000))/1000;
+          data1["Humidite"] = (int)(random(40, 60));
+          data1["Pression"] = (int)(random(950, 1030));
+          data1["Poids"] = (int)(random(1000, 5000))/1000;
       } 
       serializeJson(doc, sOutputJSon);
-      if (iDebug) {
-        serializeJsonPretty(doc, Serial);
-      }
       break;
     }
     case 10: // donneesCalib[iNbPaquet][lPresCpt1, lPresCpt2, lPresCpt3, lPresCpt4, bCalFaite, lPostCpt1, lPostCpt2, lPostCpt3, lPostCpt4]
@@ -43,9 +36,6 @@ char* geneJSon(int iTrame) { // 0:donneesFull ; 10:donneesCalib ; 20:donneeParam
       // Allocate the JSON document
       iCapacity = JSON_ARRAY_SIZE(9) + iNbPaquet * JSON_OBJECT_SIZE(9) + 2;
       StaticJsonDocument<100> doc;
-      
-      // Nomn du topic
-      doc["Topic"] = sTopic;
       
       // Add an array.
       JsonArray data = doc.to<JsonArray>();
@@ -63,20 +53,17 @@ char* geneJSon(int iTrame) { // 0:donneesFull ; 10:donneesCalib ; 20:donneeParam
       } 
       else {
         JsonObject data1 = data.createNestedObject();
-          data1["lPresCpt1"] = (long)(random(400, 1500))/1000;
-          data1["lPresCpt2"] = (long)(random(400, 1500))/1000;
-          data1["lPresCpt3"] = (long)(random(400, 1500))/1000;
-          data1["lPresCpt4"] = (long)(random(400, 1500))/1000;
+          data1["lPresCpt1"] = (int)(random(400, 1500))/1000;
+          data1["lPresCpt2"] = (int)(random(400, 1500))/1000;
+          data1["lPresCpt3"] = (int)(random(400, 1500))/1000;
+          data1["lPresCpt4"] = (int)(random(400, 1500))/1000;
           data1["bCalFaite"] = true;
-          data1["lPostCpt1"] = (long)(random(400, 1500))/1000;
-          data1["lPostCpt2"] = (long)(random(400, 1500))/1000;
-          data1["lPostCpt3"] = (long)(random(400, 1500))/1000;
-          data1["lPostCpt4"] = (long)(random(400, 1500))/1000;
+          data1["lPostCpt1"] = (int)(random(400, 1500))/1000;
+          data1["lPostCpt2"] = (int)(random(400, 1500))/1000;
+          data1["lPostCpt3"] = (int)(random(400, 1500))/1000;
+          data1["lPostCpt4"] = (int)(random(400, 1500))/1000;
       } 
       serializeJson(doc, sOutputJSon);
-      if (iDebug) {
-        serializeJsonPretty(doc, Serial);
-      }
       break;
     }
     
@@ -85,10 +72,7 @@ char* geneJSon(int iTrame) { // 0:donneesFull ; 10:donneesCalib ; 20:donneeParam
       // Allocate the JSON document
       int iCapacity = JSON_ARRAY_SIZE(3) + iNbPaquet * JSON_OBJECT_SIZE(3) + 2;
       StaticJsonDocument<100> doc;
-      
-      // Nom du topic
-      doc["Topic"] = sTopic;
-    
+       
       // Add an array.
       JsonArray data = doc.to<JsonArray>();
 
@@ -98,26 +82,20 @@ char* geneJSon(int iTrame) { // 0:donneesFull ; 10:donneesCalib ; 20:donneeParam
         data1["DelaisTrameMinute"] = lDelayTrameMin;
 
       serializeJson(doc, sOutputJSon);
-      if (iDebug) {
-        serializeJsonPretty(doc, Serial);
-      }
       break;
     }  
     case 99: // donneesDebug[iNbPaquet][fTempRuche, fTempExt, fHumidite, fPression, lPoids, sIP, fRSSI]
     {
       // Allocate the JSON document
       int iCapacity = JSON_ARRAY_SIZE(3) + iNbPaquet * JSON_OBJECT_SIZE(3) + 2;
-      StaticJsonDocument<100> doc;
+      StaticJsonDocument<150> doc;
       
-      // Nom du topic
-      doc["Topic"] = sTopic;
-    
       // Add an array.
       JsonArray data = doc.to<JsonArray>();
       if (!iCptVirtuel) {
         JsonObject data1 = data.createNestedObject();
-          data1["TemperatureRuche"] = TemperatureInterneRuche();
-          data1["TemperatureExt"] = MesureTemperature();
+          data1["TempRuche"] = TemperatureInterneRuche();
+          data1["TempExt"] = MesureTemperature();
           data1["Humidite"] = MesureHumidite();
           data1["Pression"] = MesurePression();
           data1["Poids"] = totalWeight();
@@ -126,18 +104,15 @@ char* geneJSon(int iTrame) { // 0:donneesFull ; 10:donneesCalib ; 20:donneeParam
       } 
       else {
         JsonObject data1 = data.createNestedObject();
-          data1["TemperatureRuche"] = (float)(random(1000, 40000))/1000;
-          data1["TemperatureExt"] = (float)(random(1000, 40000))/1000;
-          data1["Humidite"] = (float)(random(40, 60));
-          data1["Pression"] = (float)(random(950, 1030));
-          data1["Poids"] = (float)(random(1000, 5000))/1000;
+          data1["TempRuche"] = (int)(random(1000, 40000))/1000;
+          data1["TempExt"] = (int)(random(1000, 40000))/1000;
+          data1["Humidite"] = (int)(random(40, 60));
+          data1["Pression"] = (int)(random(950, 1030));
+          data1["Poids"] = (int)(random(1000, 5000))/1000;
           data1["IP"] = WiFi.localIP();
           data1["RSSI"] = WiFi.RSSI();          
       } 
       serializeJson(doc, sOutputJSon);
-      if (iDebug) {
-        serializeJsonPretty(doc, Serial);
-      }
       break;
     }
     default: // Demande inconnue : donneeError[iNbPaquet][iTrame]
@@ -146,9 +121,6 @@ char* geneJSon(int iTrame) { // 0:donneesFull ; 10:donneesCalib ; 20:donneeParam
       int iCapacity = JSON_ARRAY_SIZE(1) + iNbPaquet * JSON_OBJECT_SIZE(1) + 2;
       StaticJsonDocument<100> doc;
       
-      // Nom du topic
-      doc["Topic"] = sTopic;
-    
       // Add an array.
       JsonArray data = doc.to<JsonArray>();
 
@@ -156,10 +128,7 @@ char* geneJSon(int iTrame) { // 0:donneesFull ; 10:donneesCalib ; 20:donneeParam
         data1["ErrorNumTrame"] = iTrame;
 
       serializeJson(doc, sOutputJSon);
-
       break;
     }
   }
-
-  return (sOutputJSon);
 }

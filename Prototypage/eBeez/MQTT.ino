@@ -95,12 +95,19 @@ void publishSerialData(char *serialData, uint8_t MQTT_SerialOrder)
 
 void GotoClient_MQTT()
 {  
+  // Récupérartion du JSON
+  geneJSon(99);
+   
   // Publish a message to sTopic
   if(!client.connected()) {
       Serial.println("MQTT Not Connected!");
       reconnect();
   }
-  client.publish(sTopic, geneJSon(0), true);
+  if (iDebug) {
+    Serial.print("JSON: ");
+    Serial.println(sOutputJSon);
+  }
+  client.publish(sTopic, sOutputJSon, true);
   vTaskDelay(1);   // libere un peut de temp pour que le core 0 puisse effectuer des fonctions sans faire de timeout et reset de l'ensemble
 }
  
