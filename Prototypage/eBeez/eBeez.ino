@@ -105,18 +105,6 @@ const char* mqtt_server =       "qmrs.ddns.net";  // Adresse Base de donnée
 #define mqtt_port               1883              // Port 
 #define MQTT_USER               "tlot"            // Log
 #define MQTT_PASSWORD           "test_safran"     // MDP
-#define MQTT_SERIAL_PUBLISH_CH  "EbeezTopic/Ruche_1"   // TX  Topic Emission
-#define MQTT_SERIAL_RECEIVER_CH "mytopic/test1"   // Rx  Topic Reception
-
-/* Ancien code sans JSON...
-// les appels ci-dessous sont entierement à reprendre . çà fonctionne mais ce n'est pas la bonne méthode
-#define MQTT_SERIAL_PUBLISH_CH0  "EbeezTopic/TempInRuche_1"   // TX  Topic Emission
-#define MQTT_SERIAL_PUBLISH_CH1  "EbeezTopic/TempOutRuche_1"   // TX  Topic Emission
-#define MQTT_SERIAL_PUBLISH_CH2  "EbeezTopic/HumOutRuche_1"   // TX  Topic Emission
-#define MQTT_SERIAL_PUBLISH_CH3  "EbeezTopic/WeightSensorRuche_1"   // TX  Topic Emission
-#define MQTT_SERIAL_PUBLISH_CH4  "EbeezTopic/PressureSensorRuche_1"   // TX  Topic Emission
-#define MQTT_SERIAL_PUBLISH_CH5  "EbeezTopic/RSSI_Ruche_1"   // TX  Topic Emission
-*/
 
 //--Variable de temps pour la mise en sommeil de l'ESP--Variable à revoir ! -----
 //#define uS_TO_S_FACTOR 1000000 // Conversion factor for micro seconds to seconds     
@@ -155,13 +143,11 @@ int           iTrame            =  0;
 int           iNbPaquet         =  1;
 char          sOutputJSon[150];
 
-char*         sTopic            =  "Ruche/Virtuel";
+const char*   cTopicWrite       =  "Ruche/Virtuel";
+const char*   cTopicRead        =  "Ruche/Virtuel/Params";
 int           iDebug            =  1; // 0: Debug désactivé  ; 1: Debug activé
 int           iCptVirtuel       =  1; // 0: Capteurs réelles ; 1: Simulation des capteurs
 long          lDelayTrameMin    =  1; // Délais entre deux trames
-
-
-
 
 // 
 //*******//
@@ -196,8 +182,14 @@ void setup()
 void loop() 
 {
     WifiReconnect();  // permet de tester la connection periodiquement et de reconnecter si perte de réseau.
-    SerialRead();
     GotoClient_MQTT();
-    vTaskDelay(60000);   // libere un peut de temp pour que le core 0 puisse effectuer des fonctions sans faire de timeout et reset de l'ensemble
-    
+    int i=600*lDelayTrameMin;
+    while(i>1) {
+      client.loop();
+      i--;
+      SerialRead();
+      vTaskDelay(100);  
+    }
+    // Ajout IDLE de lDelayTrameMin...
+
 }
