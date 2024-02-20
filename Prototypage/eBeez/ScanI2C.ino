@@ -5,7 +5,7 @@
 void setupI2C()
 {
   Wire.begin(); // Wire communication begin
-  Serial.println("\n configuration I2C Actif");
+  Serial.println("Configuration I2C Actif");
 }
 
 void Scan_I2C()
@@ -28,7 +28,7 @@ void Scan_I2C()
     {
       Serial.print("I2C device found at address 0x");
       if (address < 16)
-        Serial.print("0");
+      Serial.print("0");
       Serial.print(address, HEX);
       Serial.println("  !");
       nDevices++;

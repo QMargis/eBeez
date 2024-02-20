@@ -77,7 +77,7 @@ server.on("/lireCourant", HTTP_GET, [](AsyncWebServerRequest *request)
   { 
     String sCourant = "Nan";
            vTaskDelay(1); 
-           sCourant = MesureCourant();   
+     //      sCourant = MesureCourant();   // plus de module 
             
     request->send(200, "text/plain", sCourant );
   });  
@@ -86,7 +86,7 @@ server.on("/lirePuissance", HTTP_GET, [](AsyncWebServerRequest *request)
   { 
     String sPuissance  = "Nan";
            vTaskDelay(1); 
-           sPuissance  = MesurePuissance (); 
+          // sPuissance  = MesurePuissance ();  //plus de module
                  
     request->send(200, "text/plain", sPuissance );
   });
@@ -96,7 +96,7 @@ server.on("/lireBatterie", HTTP_GET, [](AsyncWebServerRequest *request)
   { 
     String sBatterie  = "Nan";
            vTaskDelay(1); 
-           sBatterie  = String (MesureTension(),2); 
+           sBatterie  = String (GetVoltage(),2); 
                          
     request->send(200, "text/plain", sBatterie);
   });
@@ -196,52 +196,6 @@ server.on("/lirePoidsTotal", HTTP_GET, [](AsyncWebServerRequest *request)
     request->send(200, "text/plain", sCptPoidsTotal);
   });
 
-/*    
-//---------Lecture du Mode Auto/manuel-----------------------------
-server.on("/lireDistance", HTTP_GET, [](AsyncWebServerRequest *request)
-  {   
-    Distance();
-    String sDistance  = ("--");
-    if (sensor.tofa.distancemm < 1000) // si > 1m çà sert à rien.
-        {
-            sDistance  = (sensor.tofa.distancemm);        
-        }     
-    if (sensor.tofa.distancemm < 300) // si > 1m çà sert à rien.
-        {
-            Arreter ();          
-        }  
- 
-           //Serial.println(sensor.tofa.distancemm);
-    request->send(200, "text/plain", sDistance );
-  });
-
-
-  //---------Courant A heure ------------------------------------
-server.on("/lireCourantAh", HTTP_GET, [](AsyncWebServerRequest *request)
-  { 
-    String sCourantAh  = "Nan";
-           sCourantAh  = String(MesureAh ());               
-    request->send(200, "text/plain", sCourantAh);
-  });
-
-
- /*
-//---------Heure de debut démarrage de la rampe -------------------------
-server.on("/lireTimeLightOn", HTTP_GET, [](AsyncWebServerRequest *request)
-  { 
-    String sTimeLightOn  = "Nan";
-           sTimeLightOn  = String (HeureStartLight) ;               
-    request->send(200, "text/plain", sTimeLightOn ) ;
-  });
-
-//---------Heure de début d'arret  de la rampe --------------------------
-server.on("/lireTimeLightOff", HTTP_GET, [](AsyncWebServerRequest *request)
-  { 
-    String sTimeLightOff  = "Nan";
-           sTimeLightOff  = String(HeureStopLight);              
-    request->send(200, "text/plain", sTimeLightOff);
-  });
-*/
 //---------------------------  
 //-------Les boutons---------
 //---------------------------
@@ -287,9 +241,12 @@ server.on("/OuvreVanne", HTTP_GET, [](AsyncWebServerRequest *request)
     request->send(204);
   });
 
-  //---------------------------------------------------------------------------------------------------------------------------------------
+  //-----------------------------------------------------------------------------
+  // ne démmare que si une connexion est établie
+  //-----------------------------------------------------------------------------
   server.begin();
-  Serial.println("Serveur actif!");
+  if    (WiFi.status() == WL_CONNECTED)  {Serial.println (F("Serveur actif "));}   // Cool
+  else  {Serial.println (F("Connection Serveur Impossible Verifier votre Réseau. Bordel !"));}                    // Pas Cool
 }
 
 
@@ -301,7 +258,7 @@ void TryToConnectWifi()
   WiFi.mode(WIFI_STA);
   WiFi.begin(ssid0, password0);
   Serial.print(F("Tentative de connexion au Réseau WIFI_1"));
-  while ((WiFi.status() != WL_CONNECTED) && (CountTrytoConnect < 20))
+  while ((WiFi.status() != WL_CONNECTED) && (CountTrytoConnect < 30))
   {
     delay(500);
     Serial.print(F("."));
@@ -316,7 +273,7 @@ if (WiFi.status() != WL_CONNECTED)
     // -------------Connect to Wi-Fi 2 ----------------------
     WiFi.begin(ssid1, password1);
     Serial.print(F("Tentative de connexion au Réseau WIFI_2"));
-     while ((WiFi.status() != WL_CONNECTED) && (CountTrytoConnect < 20))
+     while ((WiFi.status() != WL_CONNECTED) && (CountTrytoConnect < 30))
       {
         delay(500);
         Serial.print(F("."));
@@ -332,7 +289,7 @@ if (WiFi.status() != WL_CONNECTED)
     // -------------Connect to Wi-Fi 2 ----------------------
     WiFi.begin(ssid2, password2);
     Serial.print(F("Tentative de connexion au Réseau WIFI_3"));
-     while ((WiFi.status() != WL_CONNECTED) && (CountTrytoConnect < 20))
+     while ((WiFi.status() != WL_CONNECTED) && (CountTrytoConnect < 30))
       {
         delay(500);
         Serial.print(F("."));
@@ -347,7 +304,7 @@ if (WiFi.status() != WL_CONNECTED)
 void WifiReconnect()
 {
 unsigned long currentMillis = millis();
-  if ((WiFi.status() != WL_CONNECTED) && (currentMillis - previousMillis >=interval)) 
+  if ((WiFi.status() != WL_CONNECTED) && (currentMillis - previousMillis >=lInterval)) 
      {
        WiFi.disconnect();
        WiFi.reconnect(); 

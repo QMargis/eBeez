@@ -1,5 +1,8 @@
-
+//--------------------------------------------------------------------------------------------------
+//interaction avec la saisie de terminal pour le debug , configuration ou activation de fonctions
 //detecte les commandes d'entrées dans le moniteur serie et lance les procedures corespondantes
+//--------------------------------------------------------------------------------------------------
+
 void SerialRead()
 {
   while (Serial.available() > 1)
@@ -28,6 +31,7 @@ void SerialRead()
       else if (sLectureSerie.equals("poids") || sLectureSerie.equals("POIDS"))
         {  
           vTaskDelay(1);
+          Serial.println("Données brutes des convertisseur HX711");
           LoadMesurement();
           Serial.println(sLectureSerie + " OK"); Serial.println(">");
         }             
@@ -36,7 +40,7 @@ void SerialRead()
       else if (sLectureSerie.equals("alim") || sLectureSerie.equals("ALIM"))
         {  
           vTaskDelay(1);
-          GetPower();
+          Serial.print   (GetVoltage());Serial.println(" Volts");
           Serial.println(sLectureSerie + " OK"); Serial.println(">");
         }          
 
@@ -89,19 +93,62 @@ void SerialRead()
 // Test de mise en veille 10 secondes
       else if (sLectureSerie.equals("sleep") || sLectureSerie.equals("SLEEP"))
         {
-            GotoToSleepAndWakeUpByTimer(10000000);
+            GotoToSleepAndWakeUpByTimer(iTimeToSleep);   // en seconde pour test
             Serial.println(sLectureSerie + " OK"); Serial.println(">");
         }
-   
+// test coupure des périphériques 
+      else if (sLectureSerie.equals("psuoff") || sLectureSerie.equals("PSUOFF"))
+        {
+            PsuShutDown();
+            Serial.println(sLectureSerie + " OK"); Serial.println(">");
+        }
+// test le remise en route des périphériques 
+      else if (sLectureSerie.equals("psuon") || sLectureSerie.equals("PSUON"))
+        {
+            PsuWakeUp();
+            Serial.println(sLectureSerie + " OK"); Serial.println(">");
+        }
+
+// affiche la lecture des valeurs de calibration mémorisées en EEPROM des 4 capteur de poids 
+      else if (sLectureSerie.equals("readcal") || sLectureSerie.equals("READCAL"))
+        {
+            Serial.println("Lecture des valeurs brutes de l'EEPROM");
+            Serial.print  ("Capteur n°1: "); Serial.println(iEepromDataRead (0));
+            Serial.print  ("Capteur n°2: "); Serial.println(iEepromDataRead (4));
+            Serial.print  ("Capteur n°3: "); Serial.println(iEepromDataRead (8));
+            Serial.print  ("Capteur n°4: "); Serial.println(iEepromDataRead(12));
+            Serial.println(sLectureSerie + " OK"); Serial.println(">");
+        }   
+
+// affiche la lecture des valeurs de calibration mémorisées en EEPROM des 4 capteur de poids 
+      else if (sLectureSerie.equals("resetcal") || sLectureSerie.equals("RESETCAL"))
+        {
+            resetEEPROM();
+            Serial.println(sLectureSerie + " OK"); Serial.println(">");
+        }  
+
+             
 // Force la reconnexion en cas de perte de réseau
       else if (sLectureSerie.equals("rip") || sLectureSerie.equals("RIP"))
         {
             vTaskDelay(1);
             TryToConnectWifi();
             Serial.println(sLectureSerie + " OK"); Serial.println(">");
-        }
-   
+        } 
 
+// Affiche le Json à l'écran 
+      else if (sLectureSerie.equals("jsonon") || sLectureSerie.equals("JSONON"))
+        {
+            bStatusJsonDisplay = true ;
+            Serial.println(sLectureSerie + " OK"); Serial.println(">");
+        }   
+
+// Affiche le Json à l'écran 
+      else if (sLectureSerie.equals("jsonoff") || sLectureSerie.equals("JSONOFF"))
+        {
+            bStatusJsonDisplay = false ;
+            Serial.println(sLectureSerie + " OK"); Serial.println(">");
+        } 
      
       // gestion des erreurs si mauvais retour.
       // evite de figer le programme dans une attente infinie sur le  port com

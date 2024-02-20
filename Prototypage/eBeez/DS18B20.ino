@@ -1,8 +1,9 @@
 /*
  * T.LOT le 13-03-2023
  * contient 2 appels
- * setupDS18B20 () à lancer une foi au demarrage
+ * setupDS18B20 () à lancer une fois au demarrage
  * la fonction TemperatureInterneRuche() retoune un float 
+ * - TemperatureInterneRuche() Fonction Retourne la température en float
  * Exemple d'appel serielp.print(TemperatureInterneRuche());retourne 28.5
  */
 

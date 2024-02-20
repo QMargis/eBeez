@@ -1,15 +1,23 @@
 // T.LOT le 13-03-2023
 /*
  * contient 6 appels
- * setupBME280 à lancer une foi au demarrage
+ * setupBME280 à lancer une fois au demarrage
  * printBME280Data pour le debug permet de sortir les infos dans le terminal a suprimer à la livraison
  * les fonction MesureTemperature,MesureHumidite et MesurePression retounent un float 
  * Exemple d'appel serielp.print(MesureTemperature());retourne 28.5
+ * Liste des appels
+ * - setupBME280()  initialisation du capteur 
+ * - MesureTemperature() Fonction Retourne la température en float
+ * - MesureHumidite()    Fonction Retourne le niveaau d'humiditée en float
+ * - MesurePression()    Fonction Retourne le niveaau de pression atmosphérique en float
  */
+
+//-----------------------------------------------------
+// Controle de la présence du capteur 
+//-----------------------------------------------------
 
 void setupBME280()
 {
- //while(!bme.begin())
  if (!bme.begin())
   {
     Serial.println("Could not find BME280 sensor!");
@@ -29,8 +37,11 @@ void setupBME280()
   }
 }
 
-
-//////////////////////////////////////////////////////////////////
+//------------------------------------------------
+// Sort les mesures en un seul appel
+// n'est plus utilisé dans le programme 
+// voir a suprimmer à la livraison
+//------------------------------------------------
 void printBME280Data (Stream* client)
 {
    float temp(NAN), hum(NAN), pres(NAN);
@@ -53,6 +64,7 @@ void printBME280Data (Stream* client)
    delay(1000);
 }
 
+
 void DataBme280 ()
 {
    float temp(NAN), hum(NAN), pres(NAN);
@@ -60,6 +72,11 @@ void DataBme280 ()
    BME280::PresUnit presUnit(BME280::PresUnit_Pa);
    bme.read(pres, temp, hum, tempUnit, presUnit);   
 }
+
+//-----------------------------------------------------------
+// Séparation des 3 elements de mesure pour de appels ciblés
+//-----------------------------------------------------------
+
 
 float MesureTemperature()  // à terminer
 {
@@ -89,15 +106,3 @@ float MesurePression()  // à terminer
    fConvertHPascal = pres/100;
    return (fConvertHPascal);    
 }
-
-/*
-void  printValuesBME280()
-{
-   Serial.print("Humidity               = ");Serial.print(bme.humidity_rh());       Serial.println(" %");
-   Serial.print("Température            = ");Serial.print(bme.die_temp_c());        Serial.println(" °C");
-   Serial.print("Pression atmosphérique = ");Serial.print(bme.pres_pa());           Serial.println(" hPa");
-
- //            Serial.print("Approx. Altitude       = ");Serial.print(bme.readAltitude(SEALEVELPRESSURE_HPA));Serial.println(" m");
-
-}
-*/
