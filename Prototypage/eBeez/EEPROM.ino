@@ -1,50 +1,52 @@
+// -------------------------------------------------------- //
+// Fonctions de gestion de l'EEPROM avec la lib Preferences //
+// -------------------------------------------------------- //
 
-/* T.LOT le 21/03/23
- * Mise en mémoire non volatile des calibrations des 4 capteurs
- * Ecriture data 32bits repartis sur 4 octets de 8bits.
- * il faut un offset de 4 à chaque valeurs de 32 bits.
- * 
- */
- 
-void setupEEPROM() 
-  {  
-      Serial.println(F("Initialize EEPROM"));
-      EEPROM.begin  (EEPROM_SIZE); 
-      lValCalibLoadCPT1  =  iEepromDataRead (0);     // memorisation des valeurs de calibration
-      lValCalibLoadCPT2  =  iEepromDataRead (8);
-      lValCalibLoadCPT3  =  iEepromDataRead (16);
-      lValCalibLoadCPT4  =  iEepromDataRead (24);  
-  }
+void setupProm()
+{
+  prefs.begin(ebeezSpace, ReadWrite);
+  /////////////////////////////////
+  // Recuperation des parametres //
+  /////////////////////////////////
 
-void resetEEPROM()
-   {
-    for (int iAddress = 0; iAddress < 32; iAddress++)
-    {
-      EEPROM.put(iAddress,0); //EEPROM.put(address, param) Attention les données serrons sur 32Bits soit 4 regitres address i+4
-      EEPROM.commit();
-    }
-   }
-//--------------------------------------------------------------------
-// Ecriture d'une valeur de 32bits en mémoire
-// Attention les données serons sur 32Bits soit 4 regitres address i+4 
-//--------------------------------------------------------------------
+  // Wifi Cllient
+  ssid_client       = prefs.getString("ssid_client", ssid_cl);
+  pass_client       = prefs.getString("pass_client", pass_cl);
 
-void EepromDataWrite ( uint8_t iAddress,long lDataWrite ) 
-  {
-    EEPROM.put(iAddress,lDataWrite); //EEPROM.put(address, param) Attention les données serrons sur 32Bits soit 4 regitres address i+4
-    EEPROM.commit();
-    if (bMenu== true) {Serial.print(" iAddress : ");Serial.print(iAddress);Serial.print("   lDataWrite : ");Serial.println(iEepromDataRead(iAddress));}
-  }
-//----------------------------------------------------------------------------
-// Lecture  d'une valeur de 32bits en mémoire
-// Attention les données serons sur 32Bits soit 4 regitres de 8bits address i+4 
-//-----------------------------------------------------------------------------
+  // Wifi AP
+  ssid_ap           = prefs.getString("ssid_ap", ssid_a);
+  pass_ap           = prefs.getString("ssid_ap", pass_a);
 
-int iEepromDataRead (uint8_t iAddress ) 
-  {
-    long lDataRead = 0;
-    EEPROM.get(iAddress, lDataRead);
-    return(lDataRead);
-  }
+  // Mode du WiFi
+  wifi_mode         = prefs.getString("modWifi", wifi_m);
 
-  
+  // Login web
+  webLogin          = prefs.getString("webLogin", webLog);
+  webPass           = prefs.getString("webPass",webPa);
+
+  // Nom de la ruche
+  rucheName         = prefs.getString("rucheName",rucheN);
+
+  // Mise en veille 
+  modeVeille        = prefs.getBool("modeVeille", modeV);
+  iTimeToSleep      = prefs.getInt("iTimeToSleep",timeToS);
+  LoopNumber        = prefs.getInt("loopnumner",LoopN);
+  vTaskDelay(1);
+
+  //Parametres balance
+  fAjustement = prefs.getFloat("fAjustement",ajust);
+  lValCalibLoadCPT1 = prefs.getLong("ValCalCPT1",valCal1);
+  lValCalibLoadCPT2 = prefs.getLong("ValCalCPT2",valCal1);
+  lValCalibLoadCPT3 = prefs.getLong("ValCalCPT3",valCal3);
+  lValCalibLoadCPT4 = prefs.getLong("ValCalCPT4",valCal4);
+  vTaskDelay(1);
+
+  //Paramters MQTT
+  mqtt_serveur      = prefs.getString("mqtt_serveur",mqttServeur);
+  mqtt_port         = prefs.getInt("mqtt_port",mqttPort);
+  mqtt_user         = prefs.getString("mqtt_user",mqttUser);
+  mqtt_pass         = prefs.getString("mqtt_pass",mqttPass);
+  vTaskDelay(1);
+
+  prefs.end();
+}

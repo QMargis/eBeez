@@ -4,62 +4,58 @@ void geneJSON(int iTrame) { // 0:donneesFull ; 10:donneesCalib ; 20:donneeParams
   int iCapacity;
 
   switch (iTrame) {
-    case 0: // donneesFull[iNbPaquet][fTempRuche, fTempExt, fHumidite, fPression, lPoids]
+    case 0: // donneesFull[fTempRuche, fTempExt, fHumidite, fPression, lPoids, RSSI, Voltage]
     {
       // Allocate the JSON document
-      iCapacity = JSON_ARRAY_SIZE(5) + iNbPaquet * JSON_OBJECT_SIZE(5) + 2;
+      iCapacity = JSON_ARRAY_SIZE(8) + iNbPaquet * JSON_OBJECT_SIZE(8) + 2;
       StaticJsonDocument<100> doc;
 
       if (!iCptVirtuel) {
         doc["TempRuche"]  = TemperatureInterneRuche();
-        doc["TempExt"]    = MesureTemperature();
-        doc["Humidite"]   = MesureHumidite();
-        doc["Pression"]   = MesurePression();
         doc["Poids"]      = totalWeight();
+        doc["RSSI"]       = WiFi.RSSI();
+        doc["Voltage"]    = GetVoltage();
+        doc["measWeight1"]= measWeight1();
+        doc["measWeight2"]= measWeight2();
+        doc["measWeight3"]= measWeight3();
+        doc["measWeight4"]= measWeight4();
       }  
       else {
         doc["TempRuche"]  = (int)(random(1000, 40000))/1000;
-        doc["TempExt"]    = (int)(random(1000, 40000))/1000;
-        doc["Humidite"]   = (int)(random(40, 60));
-        doc["Pression"]   = (int)(random(950, 1030));
         doc["Poids"]      = (int)(random(1000, 5000))/1000;
+        doc["RSSI"]       = (int)(random(-120, -30));
+        doc["Voltage"]    = (int)(random(3, 10));
+        doc["measWeight1"]= (int)(random(1000, 400000))/1000;
+        doc["measWeight2"]= (int)(random(1000, 400000))/1000;
+        doc["measWeight3"]= (int)(random(1000, 400000))/1000;
+        doc["measWeight4"]= (int)(random(1000, 400000))/1000;
       } 
       serializeJson(doc, sOutputJSon);
       break;
     }
-    case 10: // donneesCalib[iNbPaquet][lPresCpt1, lPresCpt2, lPresCpt3, lPresCpt4, bCalFaite, lPostCpt1, lPostCpt2, lPostCpt3, lPostCpt4]
+    case 10: // donneesCalib[iNbPaquet][lValCalibLoadCPT1, lValCalibLoadCPT2, lValCalibLoadCPT3, lValCalibLoadCPT4]
     {  
       // Allocate the JSON document
-      iCapacity = JSON_ARRAY_SIZE(9) + iNbPaquet * JSON_OBJECT_SIZE(9) + 2;
+      iCapacity = JSON_ARRAY_SIZE(4) + iNbPaquet * JSON_OBJECT_SIZE(4) + 2;
       StaticJsonDocument<256> doc;
 
       if (!iCptVirtuel) {
-        doc["lPresCpt1"] = ValCalibLoadCPT1;
-        doc["lPresCpt2"] = ValCalibLoadCPT2;
-        doc["lPresCpt3"] = ValCalibLoadCPT3;
-        doc["lPresCpt4"] = ValCalibLoadCPT4;
-        doc["bCalFaite"] = LoadCalibrationAllHX711();
-        doc["lPostCpt1"] = ValCalibLoadCPT1;
-        doc["lPostCpt2"] = ValCalibLoadCPT2;
-        doc["lPostCpt3"] = ValCalibLoadCPT3;
-        doc["lPostCpt4"] = ValCalibLoadCPT4;
+        doc["lPresCpt1"] = lValCalibLoadCPT1;
+        doc["lPresCpt2"] = lValCalibLoadCPT2;
+        doc["lPresCpt3"] = lValCalibLoadCPT3;
+        doc["lPresCpt4"] = lValCalibLoadCPT4;
       } 
       else {
         doc["lPresCpt1"] = (int)(random(400, 1500))/10;
         doc["lPresCpt2"] = (int)(random(400, 1500))/10;
         doc["lPresCpt3"] = (int)(random(400, 1500))/10;
         doc["lPresCpt4"] = (int)(random(400, 1500))/10;
-        doc["bCalFaite"] = true;
-        doc["lPostCpt1"] = (int)(random(400, 1500))/10;
-        doc["lPostCpt2"] = (int)(random(400, 1500))/10;
-        doc["lPostCpt3"] = (int)(random(400, 1500))/10;
-        doc["lPostCpt4"] = (int)(random(400, 1500))/10;
       } 
       serializeJson(doc, sOutputJSon);
       break;
     }
     
-    case 20: // donneeParams[iNbPaquet][cTopicWrite, cTopicRead, iTrame, lDelayTrameMin]
+    case 20: // donneeParams[iNbPaquet][cTopicWrite, cTopicRead, iTrame, lDelayTrame]
     {   
       // Allocate the JSON document
       int iCapacity = JSON_ARRAY_SIZE(3) + iNbPaquet * JSON_OBJECT_SIZE(3) + 2;
@@ -68,7 +64,7 @@ void geneJSON(int iTrame) { // 0:donneesFull ; 10:donneesCalib ; 20:donneeParams
       doc["TopicWrite"]         = cTopicWrite;
       doc["TopicRead"]          = cTopicRead;
       doc["NumTrame"]           = iTrame;
-      doc["DelaisTrameMinute"]  = lDelayTrameMin;
+      doc["DelaisTrameMinute"]  = lDelayTrame;
 
       serializeJson(doc, sOutputJSon);
       break;
@@ -81,18 +77,12 @@ void geneJSON(int iTrame) { // 0:donneesFull ; 10:donneesCalib ; 20:donneeParams
       
       if (!iCptVirtuel) {
         doc["TempRuche"]  = TemperatureInterneRuche();
-        doc["TempExt"]    = MesureTemperature();
-        doc["Humidite"]   = MesureHumidite();
-        doc["Pression"]   = MesurePression();
         doc["Poids"]      = totalWeight();
         doc["IP"]         = WiFi.localIP();
         doc["RSSI"]       = WiFi.RSSI();
       } 
       else {
         doc["TempRuche"]  = (int)(random(1000, 40000))/1000;
-        doc["TempExt"]    = (int)(random(1000, 40000))/1000;
-        doc["Humidite"]   = (int)(random(40, 60));
-        doc["Pression"]   = (int)(random(950, 1030));
         doc["Poids"]      = (int)(random(1000, 5000))/1000;
         doc["IP"]         = WiFi.localIP();
         doc["RSSI"]       = WiFi.RSSI();          
@@ -114,10 +104,10 @@ void geneJSON(int iTrame) { // 0:donneesFull ; 10:donneesCalib ; 20:donneeParams
   }
 }
 
-void decodeJSON(char* payload, unsigned int length) { // donneeParams[iNbPaquet][iTrame, lDelayTrameMin]
+void decodeJSON(char* payload, unsigned int length) { // donneeParams[iNbPaquet][iTrame, modeVeille]
   
   StaticJsonDocument<256> doc;
-    DeserializationError error = deserializeJson(doc, payload, length);
+  DeserializationError error = deserializeJson(doc, payload, length);
 
   // Test if parsing succeeds.
   if (error) {
@@ -127,14 +117,25 @@ void decodeJSON(char* payload, unsigned int length) { // donneeParams[iNbPaquet]
   }
 
   iTrame = doc["iTrame"];
-  lDelayTrameMin = doc["lDelayTrameMin"];
+  int mVeille = doc["modeVeille"];
+  if(mVeille == 1) { modeVeille=true; } else if(mVeille == 0) { modeVeille=false; }
 
   if (iDebug) {
     Serial.print("iTrame: ");
     Serial.println(iTrame);
-    Serial.print("lDelayTrameMin: ");
-    Serial.println(lDelayTrameMin);
+    Serial.print("modeVeille: ");
+    Serial.print(mVeille);
+    Serial.print(" // ");
+    Serial.println(modeVeille);
   }
- 
+
+  // Sauvegarde du mode de veille en EEPROM
+  prefs.begin(ebeezSpace, ReadWrite);
+
+  const size_t putModeVeille = prefs.putBool("modeVeille", modeVeille); 
+  if (putModeVeille == 0) { Serial.println("Preferences: Could not write modeVeille to nvs. No reboot");  }
+  else {Serial.print("modeVeille:"); Serial.println(modeVeille);}
   vTaskDelay(1);   // libere un peut de temp pour que le core 0 puisse effectuer des fonctions sans faire de timeout et reset de l'ensemble 
+
+  prefs.end();
 }

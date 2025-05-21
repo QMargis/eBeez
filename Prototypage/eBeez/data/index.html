@@ -2,217 +2,117 @@
 <html lang="fr">
     
 <head>
-    <title>Le Crillon Beez Hotel</title>
-    <meta   name="viewport" content="width=device-width, initial-scale=1"charset="UTF-8" />
-    <link   rel ="stylesheet" type="text/css" href="w3.css">
-    <link   rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <script type="text/javascript" src="jquery-3.6.0.min.js"></script>
-    <script type="text/javascript" src="script.js"></script>
+    <title>eBeez</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1"charset="UTF-8" />
+    <link rel="stylesheet" type="text/css" href="w3.css">
+	<script type="text/javascript" src="jquery-3.7.1.min.js"></script>
+	<script type="text/javascript" src="script.js"></script>
 </head>
 
 <body class="w3-animate-opacity">
 
-	<div class="w3-card w3-blue w3-padding-10 w3-center">
-		<h1>e-Beez DEMO</h1>
-        <img src = "beez2.jpg">
-		<h6>v0.02</h6>	
-	</div>
+    <div class="w3-card w3-blue w3-padding-small w3-center">
+        <h1><span id="nomRuche">Ruche</span></h1>
+    </div>
 
-	<div class="w3-margin w3-center w3-card w3-padding-24">
-        <p></p>
-        <button onclick="LoadCalibration()" class="w3-btn w3-round-large w3-border-xlarge w3-border-light-green w3-green w3-xlarge w3-ripple w3-wide " style="width:30%;">Calibration</button>
-        <p></p>
-		<br>
-	</div>
+    <div class="w3-margin w3-center w3-card w3-padding-24">
+        <h1 class="w3-padding">~ Paramètrage Ruche ~</h1>
+		<table  class="w3-center w3-table">
+			<tr class="w3-center">
+					<td class=td style="width:33%;"><Label>Login : </label><input id="login" name="login" value=''></td>
+					<td class=td style="width:33%;"><label>Password : </label><input id="pass1-log" name="pass1-log" value='' type=password></td>
+					<td class=td style="width:33%;"><label>Re-Password : </label><input id="pass2-log" name="pass2-log" value='' type=password></td>
+			</tr>			
+			<tr class="w3-center">
+					<td class=td style="width:33%;"><Label>Nom de la ruche : </label><input id="nomruche" name="nomruche" value=''></td>
+					<td class=td style="width:33%;"><Label for="mveille">Activer la mise en veille  </label><input type="checkbox" id="mveille" name="mveille"></td>
+					<td class=td style="width:33%;">	
+						<label for="tmpveille">Temps entre mise en veille (s) : </label>
+						<input type="number" name="tmpveille" id="tmpveille" min="100" max="60000" />
+					</td>
+			</tr>
+		</table>
+		<button id="appliquer-params" class="w3-button w3-white w3-border w3-xlarge w3-ripple w3-wide">Appliquer Paramétrage</button>
+        <br><br>
+    </div>
 
-	<div class="w3-margin w3-center w3-card w3-padding w3-panel w3-pale-blue w3-leftbar w3-border-blue">
-		<h4 class="w3-padding  w3-left-align"<p> Pour calibrer la balance, retirer ce qu'il y à sur les capteurs. Puis lancer la calibration avec le bouton ci-dessus.: <span id="valeurDistance">Nas</span></p></h4>
-        <h4 class="w3-padding  w3-left-align"<p> Ci-dessous l'affichage des différents paramètres intantanées de la Ruche : <span id="valeurDistance">Nas</span></p> </h4>
-	</div>
-
-<!-- affiche les parametre de l'aquarium  -->
-	<div class="w3-container">
-		<h2>Statuts de la Ruche</h2>
-			<div class="w3-responsive">
-			<table  class="w3-table-all">
-				<tr class="w3-blue">
-				<th>Matériel</th>
-                <th>Mesures</th>
-				<th>Unitées</th>
-				</tr> 
-                <tr>
-				<td>SSID de connection</td>
-				<td <span id="valeurSSID">Nan</span></td>
-				<td>--</td>
-				</tr>         
-                <tr>
-				<td>Niveau RSSI Wifi</td>
-				<td <span id="valeurRSSI">Nan</span></td>
-				<td>DBm</td>
-				</tr>             
-                <tr>
-				<td> tension des Batteries</td>
-				<td <span id="valeurBatterie">Nan</span></td>
-				<td>Volts</td>
-				</tr>  
-                <tr>
-				<td>Courant Instantané</td>
-				<td <span id="valeurCourant">Nan</span></td>
-				<td>Ampères</td>
-				</tr>                
-                <tr>
-				<td>Puissance Absorbée</td>
-				<td <span id="valeurPuissance">Nan</span></td>
-				<td>Watts</td>
-				</tr>
-				<tr>
-				<td>Consomation</td>
-				<td><span id="valeurCourantAh">Nan</span></td>
-				<td>Ah</td>
-				</tr>
-                <tr>
-				<td>Taux d'humiditée</td>
-				<td><span id="valeurHumidite">Nan</span></td>
-				<td>%</td>
-				</tr>
-                <tr>
-				<td>Température de la Ruche</td>
-				<td><span id="valeurTemperatureDS18S20">Nan</span></td>
-				<td>°C</td>
-				</tr>
-                <tr>
-				<td>Température Exterieure</td>
-				<td><span id="valeurTemperature">Nan</span></td>
-				<td>°C</td>
-				</tr>
-                <tr>
-				<td>Pression Atmosphérique</td>
-				<td><span id="valeurPression">Nan</span></td>
-				<td>hPa</td>
-				</tr>
-                <tr>
-                <!--
-				<td>Capteur de Poids n°1</td>
-				<td><span id="valeurPoids1">Nan</span></td>
-				<td>Grammes</td>
-				</tr>
-                <td>Capteur de Poids n°2</td>
-				<td><span id="valeurPoids2">Nan</span></td>
-				<td>Grammes</td>
-				</tr>
-                <td>Capteur de Poids n°3</td>
-				<td><span id="valeurPoids3">Nan</span></td>
-				<td>Grammes</td>
-				</tr>
-                <td>Capteur de Poids n°4</td>
-				<td><span id="valeurPoids4">Nan</span></td>
-				<td>Grammes</td>
-				</tr>
-                -->
-                <td>Pesée totale</td>
-				<td><span id="valeurPoidsTotal">Nan</span></td>
-				<td>Grammes</td>
+   <div class="w3-margin w3-center w3-card w3-padding-24">
+        <h1 class="w3-padding">~ Paramètrage WiFi ~</h1>
+		<select id="choixModeWifi" class="w3-select w3-border" style="width:40%;">
+			<option value="" disabled selected>Choisir le mode du WiFi</option>
+			<option value="AP">Mode AP</option>
+			<option value="CLIENT">Mode client</option>
+			<option value="DOUBLE">Mode AP & Client</option>
+		</select>
+		<div class="w3-margin w3-center w3-card-2">
+			<h3>WiFi AP</h3>
+			<table  class="w3-center w3-table">
+				<tr class="w3-center">
+						<td class=td style="width:33%;"><Label>SSID : </label><input id="ssid-ap" name="ssid-ap" value=''></td>
+						<td class=td style="width:33%;"><label>Password : </label><input id="pass1-ap" name="pass1-ap" value='' type=password></td>
+						<td class=td style="width:33%;"><label>Re-Password : </label><input id="pass2-ap" name="pass2-ap" value='' type=password></td>
 				</tr>
 			</table>
-			</div>
-	</div>
-      <br><br>
-<div class="w3-card24">
-    <div class="w3-container w3-green w3-margin">
-        <h3>Programmation Mise veille </h3>
+		</div>
+		<div class="w3-margin w3-center w3-card-2">
+			<h3>WiFi Client</h3>
+			<table  class="w3-center w3-table">
+				<tr class="w3-center">
+						<td class=td style="width:33%;"><Label>SSID : </label><input id="ssid-client" name="ssid-client" value=''></td>
+						<td class=td style="width:33%;"><label>Password : </label><input id="pass1-client" name="pass1-client" value='' type=password></td>
+						<td class=td style="width:33%;"><label>Re-Password : </label><input id="pass2-client" name="pass2-client" value='' type=password></td>
+				</tr>
+			</table>
+		</div>
+		<button id="appliquer-wifi" class="w3-button w3-white w3-border w3-xlarge w3-ripple w3-wide">Appliquer WiFi</button>
     </div>
-    <tr></tr>
-    <div class="w3-container">        
-    </div>   
-    <div class="w3-row-padding">
-         <div class="w3-half w3-margin">
-          <br>
-            <label>Heure d'Allumage</label>
-             <select id="choixHeureRampeOn" class="w3-select" style="width:50%;">
-                <option value="" disabled selected>Choisir une heure</option>
-                <option value="0">      0h00</option>
-                <option value="1">      1h00</option>
-                <option value="2">      2h00</option>
-                <option value="3">      3h00</option>
-                <option value="4">      4h00</option>                
-                <option value="5">      5h00</option>
-                <option value="6">      6h00</option>
-                <option value="7">      7h00</option>
-                <option value="8">      8h00</option>
-                <option value="9">      9h00</option>
-                <option value="10">    10h00</option>
-                <option value="11">    11h00</option>
-                <option value="12">    12h00</option>
-                <option value="13">    13h00</option>
-                <option value="14">    14h00</option>
-                <option value="15">    15h00</option>
-                <option value="16">    16h00</option>
-                <option value="17">    17h00</option>
-                <option value="18">    18h00</option>
-                <option value="19">    19h00</option>
-                <option value="20">    20h00</option>
-                <option value="21">    21h00</option>
-                <option value="22">    22h00</option>
-                <option value="23">    23h00</option>      
-            </select>
-            <br>
-        <button id="appliquerRampeOn" class="w3-btn w3-round-large w3-border-large w3-border-light-blue w3-indigo  w3-ripple ">Appliquer</button>
-        </div>
-        
-        <div class="w3-half w3-margin">
-        <br>
-            <label>Heure d'Extinction</label>   
-             <select id="choixHeureRampeOff" class="w3-select" style="width:50%;">
-                <option value="" disabled selected>Choisir une heure</option>
-                <option value="0">      0h00</option>
-                <option value="1">      1h00</option>
-                <option value="2">      2h00</option>
-                <option value="3">      3h00</option>
-                <option value="4">      4h00</option>                
-                <option value="5">      5h00</option>
-                <option value="6">      6h00</option>
-                <option value="7">      7h00</option>
-                <option value="8">      8h00</option>
-                <option value="9">      9h00</option>
-                <option value="10">    10h00</option>
-                <option value="11">    11h00</option>
-                <option value="12">    12h00</option>
-                <option value="13">    13h00</option>
-                <option value="14">    14h00</option>
-                <option value="15">    15h00</option>
-                <option value="16">    16h00</option>
-                <option value="17">    17h00</option>
-                <option value="18">    18h00</option>
-                <option value="19">    19h00</option>
-                <option value="20">    20h00</option>
-                <option value="21">    21h00</option>
-                <option value="22">    22h00</option>
-                <option value="23">    23h00</option>      
-            </select>
-            <br>
-        <button id="appliquerRampeOff" class="w3-btn w3-round-large w3-border-large w3-border-light-blue w3-indigo  w3-ripple ">Appliquer</button>
-        </div>
-        
-        <div class="w3-half w3-margin">
-        <br>
-            <label>Refroidissement   </label>
-    
-             <select id="choixVitesseVentilation" class="w3-select" style="width:50%;">
-                <option value="" disabled selected>Choisir une vitesse</option>
-                <option value="20">      20%</option>
-                <option value="30">      30%</option>
-                <option value="40">      40%</option>
-                <option value="50">      50%</option>
-                <option value="60">      60%</option>                
-                <option value="70">      70%</option>
-                <option value="80">      80%</option>
-                <option value="90">      90%</option>
-            </select>
-            <br>
-        <button id="appliquerVitesseVentilation" class="w3-btn w3-round-large w3-border-large w3-border-light-blue w3-indigo  w3-ripple ">Appliquer</button>
-        </div>
-        
-    </div> 
-</div>
+	
+	<div class="w3-margin w3-center w3-card w3-padding-24">
+        <h1 class="w3-padding">~ Paramètrage MQTT ~</h1>
+		<table  class="w3-center w3-table">
+			<tr class="w3-center">
+					<td class=td style="width:50%;"><Label>Adresse serveur : </label><input id="mqtt_serveur" name="mqtt_serveur" value=''></td>
+					<td class=td style="width:50%;"><Label>Port serveur : </label><input id="mqtt_port" name="mqtt_port" value=''></td>
+			</tr>
+		</table>
+		<table  class="w3-center w3-table">
+			<tr class="w3-center">
+					<td class=td style="width:33%;"><Label>User : </label><input id="mqtt_user" name="mqtt_user" value=''></td>
+					<td class=td style="width:33%;"><label>Password : </label><input id="mqtt_pass1" name="mqtt_pass1" value='' type=password></td>
+					<td class=td style="width:33%;"><label>Re-Password : </label><input id="mqtt_pass2" name="mqtt_pass2" value='' type=password></td>
+			</tr>			
+
+		</table>
+		<button id="appliquer-mqtt" class="w3-button w3-white w3-border w3-xlarge w3-ripple w3-wide">Appliquer MQTT</button>
+        <br><br>
+    </div>
+	
+	<div class="w3-margin w3-center w3-card w3-padding-24">
+        <h1 class="w3-padding">~ Calibration ~</h1>
+		<table  class="w3-center w3-table">
+			<tr class="w3-center">
+					<td class=td style="width:25%;"><Label>Cal CPT1 : </label><input id="cal1" name="cal1" value=''></td>
+					<td class=td style="width:25%;"><Label>Cal CPT2 : </label><input id="cal2" name="cal2" value=''></td>
+					<td class=td style="width:25%;"><Label>Cal CPT3 : </label><input id="cal3" name="cal3" value=''></td>
+					<td class=td style="width:25%;"><Label>Cal CPT4 : </label><input id="cal4" name="cal4" value=''></td>
+			</tr>			
+		</table>
+		<Label>Facteur d'ajustement : </label><input name="fAjust" id="fAjust" value=''><br><br>
+		<button id="calibrer" class="w3-button w3-white w3-border w3-xlarge w3-ripple w3-wide">Calibrer</button>
+        <br><br>
+    </div>
+	
+    <div class="w3-margin w3-center w3-card w3-padding-24">
+        <h1 class="w3-padding">~ Mise à jour firmware ~</h1>
+		<button id="update" onclick="window.open('/update')" class="w3-button w3-white w3-border w3-xlarge w3-ripple w3-wide">Update</button>
+    </div>
+	
+	<div class="w3-margin w3-center w3-card w3-padding-24">
+        <h1 class="w3-padding">~ Redémarrage ~</h1>
+		<button id="reboot" onclick="rebootButton()" class="w3-button w3-white w3-border w3-xlarge w3-ripple w3-wide">Reboot</button>
+    </div>
+
+
 </body>
+
 </html>

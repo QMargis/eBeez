@@ -7,9 +7,9 @@
  * Exemple d'appel serielp.print(TemperatureInterneRuche());retourne 28.5
  */
 
-void setupDS18B20 ()
+void setupDS18B20()
 {
-    // Start the DS18B20 sensor
+  // Start the DS18B20 sensor
   sensors.begin();
 }
 

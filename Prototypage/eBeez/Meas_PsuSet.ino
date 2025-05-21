@@ -9,9 +9,9 @@
 //------------------------------------------------------- 
 void SetupPeripherialPowerState()
   {
-     pinMode      (14, OUTPUT);  //Il faut déclarer le pin en entrée
-     digitalWrite (14, true  );  // sortie sur la broche 12 GPIO14
-     vTaskDelay(500);            // Delais de mise en route des periphériques
+     pinMode      (iCmdPowerI2cSensors, OUTPUT);  //Il faut déclarer le pin en entrée
+     digitalWrite (iCmdPowerI2cSensors, true  );  // sortie sur la broche 12 GPIO14
+     vTaskDelay(500);                     // Delais de mise en route des periphériques
   }
 
 //------------------------------------------------------
@@ -19,8 +19,8 @@ void SetupPeripherialPowerState()
 //------------------------------------------------------ 
 void  PsuWakeUp()
   {
-      digitalWrite (14, true) ;   // sortie sur la broche 12 GPIO14
-      vTaskDelay(500);            // Delais de mise en route des periphériques
+      digitalWrite (iCmdPowerI2cSensors, true) ;  // sortie sur la broche 12 GPIO14
+      vTaskDelay(500);                    // Delais de mise en route des periphériques
   }
 
 //------------------------------------------------------
@@ -28,8 +28,8 @@ void  PsuWakeUp()
 //------------------------------------------------------ 
 void  PsuShutDown()
   {
-      digitalWrite (14, false) ;   // sortie sur la broche 12 GPIO14
-      vTaskDelay(1);               // Delais de mise en route des periphériques
+      digitalWrite (iCmdPowerI2cSensors, false) ;   // sortie sur la broche 12 GPIO14
+      vTaskDelay(1);                        // Delais de mise en route des periphériques
   }
 
 //------------------------------------------------------
@@ -37,8 +37,8 @@ void  PsuShutDown()
 //------------------------------------------------------
 void SetupConfigVoltage ()
   { 
-      pinMode      (34, INPUT);   //Il faut déclarer le pin en entrée
-      analogSetPinAttenuation(34,ADC_11db);
+      pinMode      (iGetVoltPin, INPUT);   //Il faut déclarer le pin en entrée
+      analogSetPinAttenuation(iGetVoltPin,ADC_11db);
       analogReadResolution(12);   //Résolution entre 9-12 bits
       
   }
@@ -48,13 +48,12 @@ void SetupConfigVoltage ()
 // Au niveau de la batterie sous forme de fonction. raport de tension 0,1506
 // Une moyenne est effectuée sur 10 echentillons pour lisser le bruit
 //-------------------------------------------------------------------------- 
-
 float GetVoltage ()
   {
-    const  uint8_t  PinADC         = 34;                // GPIO 34 ADC6
+    const  uint8_t  PinADC         = iGetVoltPin;                // GPIO 34 ADC6
            uint32_t iADC6          = analogRead (PinADC);
            float    fMesureVoltage = 0;
-           float    fBridgeValue   = 0.0057  ;          // 0.1506 Valeur des convertion du pont diviseur pour ramener la valeur à Vmax de 3v en convertion max
+           float    fBridgeValue   = fCoeffAlim/1000; //0.0057  ;          // 0.1506 Valeur des convertion du pont diviseur pour ramener la valeur à Vmax de 3v en convertion max
            iADC6  = analogRead     (PinADC);
            
            for (uint8_t iCount  = 0 ; iCount < 10 ; iCount++) //moyenne pour lisser la tension à revoir à la baisse
@@ -63,6 +62,6 @@ float GetVoltage ()
                   vTaskDelay(5);                             // libere un peut de temp pour que le core 0 puisse effectuer des fonctions sans faire de timeout et reset de l'ensemble
               }
            fMesureVoltage = iADC6/10 ; // fait la moyenne 
-           fMesureVoltage = fMesureVoltage * fBridgeValue;
+           fMesureVoltage = fMesureVoltage * fBridgeValue + fOrdoAlim;
      return(fMesureVoltage);
   }
